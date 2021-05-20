@@ -38,7 +38,8 @@ def helpcmd(update, context):
     help_msg = ( 
         "Here is a list of my commands:" + "\n" + "\n" + 
         "/savelink  <category>  <link>" + "\n" + "save your link with a category. e.g. /save google www.google.com" + "\n" + "\n" + 
-        "/getlinklink  <category>" + "\n" + "retreive all links associated with a category. e.g. /getlink google" + "\n" + "\n" + 
+        "/getlinks  <category>" + "\n" + "retreive all links associated with a category. e.g. /getlinks google" + "\n" + "\n" + 
+        "/getcategories" + "\n" + "retreive all saved categories." + "\n" + "\n" + 
         "/removelink  <category>  <link>" + "\n" + "remove a specific link in a category. e.g. removelink google www.google.com" + "\n" + "\n" + 
         "/clearcategory  <category>" + "\n" + "deletes all links associated with a category. e.g. /clearcategory google" + "\n" + "\n" + 
         "/wipedata" + "\n" + "deletes all your saved links and categories." + "\n" + "\n" + 
@@ -103,11 +104,11 @@ def get(update, context):
             get_msg = ('Here are the links you saved in "' + category + '":' + "\n" + "\n" +  links)
 
         else:
-            catagories_list = []
+            categories_list = []
             for key in user_data.keys():
-                catagories_list.append(key)
-                saved_catagories = '\n'.join(catagories_list)
-            get_msg = ("You dont have that as a category" + "\n" + "\n" + "Your saved categories are:" + "\n" + "\n" + saved_catagories)
+                categories_list.append(key)
+                saved_categories = '\n'.join(categories_list)
+            get_msg = ("You dont have that as a category" + "\n" + "\n" + "Your saved categories are:" + "\n" + "\n" + saved_categories)
     context.bot.send_message(chat_id=update.effective_chat.id, text=get_msg, disable_web_page_preview=1);
 
 def remove(update: Update, context: CallbackContext):
@@ -178,11 +179,11 @@ def button(update: Update, context: CallbackContext):
                             json.dump(user_data, file_write, sort_keys=True, indent=2)
                         button_msg = (toadd + ' has been removed from ' + category)
                 else:
-                    catagories_list = []
+                    categories_list = []
                     for key in user_data.keys():
-                        catagories_list.append(key)
-                        saved_catagories = '\n'.join(catagories_list)
-                    button_msg = ('"' + category + '" is not one of your categories' + "\n" + "\n" + "Your saved categories are:" + "\n" + "\n" + saved_catagories)
+                        categories_list.append(key)
+                        saved_categories = '\n'.join(categories_list)
+                    button_msg = ('"' + category + '" is not one of your categories' + "\n" + "\n" + "Your saved categories are:" + "\n" + "\n" + saved_categories)
         if len(url) > 1:
             button_msg = "please only send one link at a time"
         if len(url) == 0:
@@ -207,11 +208,11 @@ def button(update: Update, context: CallbackContext):
                 button_msg = ('All links in "' + category + '" have been deleted')
 
             else:
-                catagories_list = []
+                categories_list = []
                 for key in user_data.keys():
-                    catagories_list.append(key)
-                    saved_catagories = '\n'.join(catagories_list)
-                button_msg = ("You dont have that as a category" + "\n" + "\n" + "Your saved categories are:" + "\n" + "\n" + saved_catagories)
+                    categories_list.append(key)
+                    saved_categories = '\n'.join(categories_list)
+                button_msg = ("You dont have that as a category" + "\n" + "\n" + "Your saved categories are:" + "\n" + "\n" + saved_categories)
 
     elif update.callback_query.data == '4':
         button_msg = 'No changes have been made.'
@@ -235,6 +236,27 @@ def button(update: Update, context: CallbackContext):
     context.bot.deleteMessage(update.callback_query.message.chat.id, update.callback_query.message.message_id)
     context.bot.send_message(chat_id=update.effective_chat.id, text=button_msg)
 
+def getcategories(update, context):
+
+	users_message = update.message.text
+	username = update.message.from_user.username
+	userfile = username + '.json'
+	userfile_path = os.path.join(userdb, userfile)
+	if not os.path.isfile(userfile_path):
+	    with open(userfile_path, "w") as file_init:
+	        initialize = {}
+	        file_init.write(json.dumps(initialize))
+	with open(userfile_path) as file:
+	    user_data = json.loads(file.read())
+	    categories_list = []
+	    for key in user_data.keys():
+	        categories_list.append(key)
+	        print(categories_list)
+	        saved_categories = '\n'.join(categories_list)
+	    categories_msg = ("Your saved categories are:" + "\n" + "\n" + saved_categories)
+	    updater.bot.sendMessage(chat_id=update.effective_chat.id, text = categories_msg);
+	    if len(categories_list) == 0: 
+	    	updater.bot.sendMessage(chat_id=update.effective_chat.id, text = "You dont have any saved categories yet.");
 
 def stop(update, context):
     if update.message.chat.id == 110799848:
@@ -244,16 +266,16 @@ def stop(update, context):
 
 
 
-
 #Dispatchers for bot commands
 dispatcher.add_handler(CallbackQueryHandler(button))
 dispatcher.add_handler(CommandHandler('start', start))
 dispatcher.add_handler(CommandHandler('helplink', helpcmd))
 dispatcher.add_handler( CommandHandler('savelink', save))
-dispatcher.add_handler(CommandHandler('getlink', get))
+dispatcher.add_handler(CommandHandler('getlinks', get))
 dispatcher.add_handler(CommandHandler('removelink', remove))
 dispatcher.add_handler(CommandHandler('clear', clear))
 dispatcher.add_handler(CommandHandler('wipedata', wipe))
+dispatcher.add_handler(CommandHandler('getcategories', getcategories))
 dispatcher.add_handler(CommandHandler('stop', stop))
 
 
