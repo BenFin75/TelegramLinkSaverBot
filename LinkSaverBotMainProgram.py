@@ -251,7 +251,6 @@ def getcategories(update, context):
 	    categories_list = []
 	    for key in user_data.keys():
 	        categories_list.append(key)
-	        print(categories_list)
 	        saved_categories = '\n'.join(categories_list)
 	    categories_msg = ("Your saved categories are:" + "\n" + "\n" + saved_categories)
 	    updater.bot.sendMessage(chat_id=update.effective_chat.id, text = categories_msg);
