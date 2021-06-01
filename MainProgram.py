@@ -43,10 +43,11 @@ def helpcmd(update, context):
         "/removelink  <category>  <link>" + "\n" + "remove a specific link in a category. e.g. removelink google www.google.com" + "\n" + "\n" + 
         "/clearcategory  <category>" + "\n" + "deletes all links associated with a category. e.g. /clearcategory google" + "\n" + "\n" + 
         "/wipedata" + "\n" + "deletes all your saved links and categories." + "\n" + "\n" + 
+        "/help" + "\n" + "opens this list of commands." + "\n" + "\n" + 
         "Made by Ben Finley" + "\n" + 
         "The code for this bot is avalible at: https://github.com/Hiben75/TelegramLinkSaverBot"
         )
-    context.bot.send_message(chat_id=update.effective_chat.id, text=help_msg);
+    context.bot.send_message(chat_id=update.effective_chat.id, text=help_msg, disable_web_page_preview=1);
 
 def save(update, context):
     users_message = update.message.text
@@ -268,11 +269,11 @@ def stop(update, context):
 #Dispatchers for bot commands
 dispatcher.add_handler(CallbackQueryHandler(button))
 dispatcher.add_handler(CommandHandler('start', start))
-dispatcher.add_handler(CommandHandler('helplink', helpcmd))
+dispatcher.add_handler(CommandHandler('help', helpcmd))
 dispatcher.add_handler( CommandHandler('savelink', save))
 dispatcher.add_handler(CommandHandler('getlinks', get))
 dispatcher.add_handler(CommandHandler('removelink', remove))
-dispatcher.add_handler(CommandHandler('clear', clear))
+dispatcher.add_handler(CommandHandler('clearcategory', clear))
 dispatcher.add_handler(CommandHandler('wipedata', wipe))
 dispatcher.add_handler(CommandHandler('getcategories', getcategories))
 dispatcher.add_handler(CommandHandler('stop', stop))
